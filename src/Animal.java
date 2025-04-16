@@ -9,6 +9,10 @@ public abstract class Animal extends Organism {
 	}
 
 	public void move(Ecosystem ecosystem) {
+		// cardinality([-movementSpeed, movementSpeed]) == 2 * movementSpeed = 1
+		// Math.random() in [0, 1)
+		// Math.random() * (2 * movementSpeed + 1) in [0, 2 * movementSpeed]
+		// Math.random() * (2 * movementSpeed + 1) - movementSpeed in [-movementSpeed, movementSpeed]
 		int dx = (int) (Math.random() * (2 * movementSpeed + 1)) - movementSpeed;
 		int dy = (int) (Math.random() * (2 * movementSpeed + 1)) - movementSpeed;
 

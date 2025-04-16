@@ -25,6 +25,9 @@ public class Herbivore extends Animal {
 			energy += 10;
 			food.setEnergy(food.getEnergy() - 10);
 			food.checkDeath();
+			if (!food.isAlive()) {
+				System.out.println("Herbivore at " + position + " has eaten plant at " + food.getPosition());
+			}
 		}
 	}
 

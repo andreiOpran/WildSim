@@ -59,21 +59,32 @@ public class Ecosystem {
 	public void progressSimulation() {
 		for (Organism organism : organisms) {
 			if (organism.isAlive()) {
-				organism.live(this); // Uncomment when implementing the live method
+				organism.live(this);
 			}
 		}
 		organisms.removeIf(organism -> !organism.isAlive());
 		updateMatrix();
 	}
 
-	public void displayMatrix() {
-		for (int i = 0; i < height; i++) {
-			for (int j = 0; j < width; j++) {
-				System.out.print(matrix[i][j] + " ");
-			}
-			System.out.println();
-		}
-	}
+public void displayMatrix() {
+    System.out.print("   ");
+    for (int j = 0; j < width; j++) {
+        System.out.print(j + " ");
+    }
+    System.out.println();
+
+    // Print row numbers and matrix content
+    for (int i = 0; i < height; i++) {
+        System.out.print(i + " ");
+        if (i < 10) {
+            System.out.print(" ");
+        }
+        for (int j = 0; j < width; j++) {
+            System.out.print(matrix[i][j] + " ");
+        }
+        System.out.println();
+    }
+}
 
 	public void generateRandomTrees(int count) {
 		for (int i = 0; i < count; i++) {

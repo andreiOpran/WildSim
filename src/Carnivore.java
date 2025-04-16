@@ -42,6 +42,7 @@ public class Carnivore extends Animal {
 				food.setEnergy(5);
 			} else {
 				food.setAlive(false);
+				System.out.println("Carnivore at " + position + " has eaten herbivore at " + food.getPosition());
 			}
 		}
 	}
