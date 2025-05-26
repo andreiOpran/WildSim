@@ -9,6 +9,11 @@ public class Carnivore extends Animal {
 		super(position, energy, 'C', 2, 5);
 	}
 
+	public Carnivore(Position position, int energy, boolean alive, char symbol, int movementSpeed, int visionRange) {
+        super(position, energy, symbol, movementSpeed, visionRange);
+        this.alive = alive;
+    }
+
 	@Override
 	public void live(Ecosystem ecosystem) {
 		Position foodPosition = findClosestFood(ecosystem);

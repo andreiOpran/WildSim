@@ -41,4 +41,12 @@ public abstract class Animal extends Organism {
 	public int getMovementSpeed() {
 		return movementSpeed;
 	}
+
+	public void setMovementSpeed(int movementSpeed) {
+		this.movementSpeed = movementSpeed;
+	}
+
+	public void setVisionRange(int visionRange) {
+		this.visionRange = visionRange;
+	}
 }

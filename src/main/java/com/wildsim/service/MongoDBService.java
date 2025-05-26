@@ -52,11 +52,11 @@ public class MongoDBService {
 		return doc != null ? convertDocumentToTree(doc) : null;
 	}
 
-	public void updateTree(Tree tree) {
+	public void updateTree(Tree tree, Position oldPosition) {
 		MongoCollection<Document> collection = database.getCollection("trees");
 		Bson filter = Filters.and(
-			Filters.eq("position.x", tree.getPosition().getX()),
-			Filters.eq("position.y", tree.getPosition().getY())
+			Filters.eq("position.x", oldPosition.getX()),
+			Filters.eq("position.y", oldPosition.getY())
 		);
 		Document doc = convertTreeToDocument(tree);
 		collection.replaceOne(filter, doc, new ReplaceOptions().upsert(true));
@@ -100,15 +100,15 @@ public class MongoDBService {
         return doc != null ? convertDocumentToCarnivore(doc) : null;
     }
 
-    public void updateCarnivore(Carnivore carnivore) {
-        MongoCollection<Document> collection = database.getCollection("carnivores");
-        Bson filter = Filters.and(
-            Filters.eq("position.x", carnivore.getPosition().getX()),
-            Filters.eq("position.y", carnivore.getPosition().getY())
-        );
-        Document doc = convertCarnivoreToDocument(carnivore);
-        collection.replaceOne(filter, doc, new ReplaceOptions().upsert(true));
-    }
+	public void updateCarnivore(Carnivore carnivore, Position oldPosition) {
+		MongoCollection<Document> collection = database.getCollection("carnivores");
+		Bson filter = Filters.and(
+			Filters.eq("position.x", oldPosition.getX()),
+			Filters.eq("position.y", oldPosition.getY())
+		);
+		Document doc = convertCarnivoreToDocument(carnivore);
+		collection.replaceOne(filter, doc, new ReplaceOptions().upsert(true));
+	}
 
     public boolean deleteCarnivore(Position position) {
         MongoCollection<Document> collection = database.getCollection("carnivores");
@@ -148,15 +148,15 @@ public class MongoDBService {
         return doc != null ? convertDocumentToHerbivore(doc) : null;
     }
 
-    public void updateHerbivore(Herbivore herbivore) {
-        MongoCollection<Document> collection = database.getCollection("herbivores");
-        Bson filter = Filters.and(
-            Filters.eq("position.x", herbivore.getPosition().getX()),
-            Filters.eq("position.y", herbivore.getPosition().getY())
-        );
-        Document doc = convertHerbivoreToDocument(herbivore);
-        collection.replaceOne(filter, doc, new ReplaceOptions().upsert(true));
-    }
+	public void updateHerbivore(Herbivore herbivore, Position oldPosition) {
+		MongoCollection<Document> collection = database.getCollection("herbivores");
+		Bson filter = Filters.and(
+			Filters.eq("position.x", oldPosition.getX()),
+			Filters.eq("position.y", oldPosition.getY())
+		);
+		Document doc = convertHerbivoreToDocument(herbivore);
+		collection.replaceOne(filter, doc, new ReplaceOptions().upsert(true));
+	}
 
     public boolean deleteHerbivore(Position position) {
         MongoCollection<Document> collection = database.getCollection("herbivores");
@@ -196,15 +196,15 @@ public class MongoDBService {
         return doc != null ? convertDocumentToWaterSource(doc) : null;
     }
 
-    public void updateWaterSource(WaterSource waterSource) {
-        MongoCollection<Document> collection = database.getCollection("waterSources");
-        Bson filter = Filters.and(
-            Filters.eq("x", waterSource.getX()),
-            Filters.eq("y", waterSource.getY())
-        );
-        Document doc = convertWaterSourceToDocument(waterSource);
-        collection.replaceOne(filter, doc, new ReplaceOptions().upsert(true));
-    }
+	public void updateWaterSource(WaterSource waterSource, int oldX, int oldY) {
+		MongoCollection<Document> collection = database.getCollection("waterSources");
+		Bson filter = Filters.and(
+			Filters.eq("x", oldX),
+			Filters.eq("y", oldY)
+		);
+		Document doc = convertWaterSourceToDocument(waterSource);
+		collection.replaceOne(filter, doc, new ReplaceOptions().upsert(true));
+	}
 
     public boolean deleteWaterSource(int x, int y) {
         MongoCollection<Document> collection = database.getCollection("waterSources");
@@ -220,80 +220,219 @@ public class MongoDBService {
 	// CONVERSIONS
 	private Document convertTreeToDocument(Tree tree) {
 		Document doc = new Document();
+		doc.append("type", "tree");
 		doc.append("position", new Document()
 				.append("x", tree.getPosition().getX())
 				.append("y", tree.getPosition().getY()));
 		doc.append("energy", tree.getEnergy());
 		doc.append("symbol", String.valueOf(tree.getSymbol()));
 		doc.append("alive", tree.isAlive());
+		doc.append("growthRate", tree.getGrowthRate());
+		doc.append("energyThreshold", tree.getEnergyThreshold());
 		return doc;
 	}
 
 	private Tree convertDocumentToTree(Document doc) {
 		Document posDoc = (Document) doc.get("position");
-		Position position = new Position(posDoc.getInteger("x"), posDoc.getInteger("y"));
-		Tree tree = new Tree(position);
-		tree.setEnergy(doc.getInteger("energy"));
-		tree.setAlive(doc.getBoolean("alive"));
-		return tree;
+		Position position = new Position(
+			posDoc != null ? posDoc.getInteger("x", 0) : 0,
+			posDoc != null ? posDoc.getInteger("y", 0) : 0
+		);
+
+		Integer energy = doc.getInteger("energy");
+		Boolean alive = doc.getBoolean("alive");
+		String symbolStr = doc.getString("symbol");
+		Integer growthRate = doc.getInteger("growthRate");
+		Integer energyThreshold = doc.getInteger("energyThreshold");
+
+		return new Tree(
+			position,
+			energy != null ? energy : 30,
+			alive != null ? alive : true,
+			symbolStr != null && !symbolStr.isEmpty() ? symbolStr.charAt(0) : 'T',
+			growthRate != null ? growthRate : 2,
+			energyThreshold != null ? energyThreshold : 65
+		);
 	}
 
 	private Document convertCarnivoreToDocument(Carnivore carnivore) {
-        Document doc = new Document();
-        doc.append("position", new Document()
-                .append("x", carnivore.getPosition().getX())
-                .append("y", carnivore.getPosition().getY()));
-        doc.append("energy", carnivore.getEnergy());
-        doc.append("symbol", String.valueOf(carnivore.getSymbol()));
-        doc.append("alive", carnivore.isAlive());
-        doc.append("visionRange", carnivore.getVisionRange());
-        doc.append("movementSpeed", carnivore.getMovementSpeed());
-        return doc;
-    }
+		Document doc = new Document();
+		doc.append("type", "carnivore");
+		doc.append("position", new Document()
+				.append("x", carnivore.getPosition().getX())
+				.append("y", carnivore.getPosition().getY()));
+		doc.append("energy", carnivore.getEnergy());
+		doc.append("symbol", String.valueOf(carnivore.getSymbol()));
+		doc.append("alive", carnivore.isAlive());
+		doc.append("visionRange", carnivore.getVisionRange());
+		doc.append("movementSpeed", carnivore.getMovementSpeed());
+		return doc;
+	}
 
-    private Carnivore convertDocumentToCarnivore(Document doc) {
-        Document posDoc = (Document) doc.get("position");
-        Position position = new Position(posDoc.getInteger("x"), posDoc.getInteger("y"));
-        Carnivore carnivore = new Carnivore(position, doc.getInteger("energy"));
-        carnivore.setAlive(doc.getBoolean("alive"));
-        return carnivore;
-    }
+	private Carnivore convertDocumentToCarnivore(Document doc) {
+		Document posDoc = (Document) doc.get("position");
+		Position position = new Position(
+			posDoc != null ? posDoc.getInteger("x", 0) : 0,
+			posDoc != null ? posDoc.getInteger("y", 0) : 0
+		);
 
-    private Document convertHerbivoreToDocument(Herbivore herbivore) {
-        Document doc = new Document();
-        doc.append("position", new Document()
-                .append("x", herbivore.getPosition().getX())
-                .append("y", herbivore.getPosition().getY()));
-        doc.append("energy", herbivore.getEnergy());
-        doc.append("symbol", String.valueOf(herbivore.getSymbol()));
-        doc.append("alive", herbivore.isAlive());
-        doc.append("visionRange", herbivore.getVisionRange());
-        doc.append("movementSpeed", herbivore.getMovementSpeed());
-        return doc;
-    }
+		Integer energy = doc.getInteger("energy");
+		Boolean alive = doc.getBoolean("alive");
+		String symbolStr = doc.getString("symbol");
+		Integer movementSpeed = doc.getInteger("movementSpeed");
+		Integer visionRange = doc.getInteger("visionRange");
 
-    private Herbivore convertDocumentToHerbivore(Document doc) {
-        Document posDoc = (Document) doc.get("position");
-        Position position = new Position(posDoc.getInteger("x"), posDoc.getInteger("y"));
-        Herbivore herbivore = new Herbivore(position, doc.getInteger("energy"));
-        herbivore.setAlive(doc.getBoolean("alive"));
-        return herbivore;
-    }
+		return new Carnivore(
+			position,
+			energy != null ? energy : 20,
+			alive != null ? alive : true,
+			symbolStr != null && !symbolStr.isEmpty() ? symbolStr.charAt(0) : 'C',
+			movementSpeed != null ? movementSpeed : 2,
+			visionRange != null ? visionRange : 5
+		);
+	}
 
-    private Document convertWaterSourceToDocument(WaterSource waterSource) {
-        Document doc = new Document();
-        doc.append("x", waterSource.getX());
-        doc.append("y", waterSource.getY());
-        doc.append("waterLevel", waterSource.getWaterLevel());
-        return doc;
-    }
+	private Document convertHerbivoreToDocument(Herbivore herbivore) {
+		Document doc = new Document();
+		doc.append("type", "herbivore");
+		doc.append("position", new Document()
+				.append("x", herbivore.getPosition().getX())
+				.append("y", herbivore.getPosition().getY()));
+		doc.append("energy", herbivore.getEnergy());
+		doc.append("symbol", String.valueOf(herbivore.getSymbol()));
+		doc.append("alive", herbivore.isAlive());
+		doc.append("visionRange", herbivore.getVisionRange());
+		doc.append("movementSpeed", herbivore.getMovementSpeed());
+		return doc;
+	}
 
-    private WaterSource convertDocumentToWaterSource(Document doc) {
-        return new WaterSource(
-            doc.getInteger("x"),
-            doc.getInteger("y"),
-            doc.getDouble("waterLevel")
+	private Herbivore convertDocumentToHerbivore(Document doc) {
+		Document posDoc = (Document) doc.get("position");
+		Position position = new Position(
+			posDoc != null ? posDoc.getInteger("x", 0) : 0,
+			posDoc != null ? posDoc.getInteger("y", 0) : 0
+		);
+
+		Integer energy = doc.getInteger("energy");
+		Boolean alive = doc.getBoolean("alive");
+		String symbolStr = doc.getString("symbol");
+		Integer movementSpeed = doc.getInteger("movementSpeed");
+		Integer visionRange = doc.getInteger("visionRange");
+
+		return new Herbivore(
+			position,
+			energy != null ? energy : 15,
+			alive != null ? alive : true,
+			symbolStr != null && !symbolStr.isEmpty() ? symbolStr.charAt(0) : 'H',
+			movementSpeed != null ? movementSpeed : 1,
+			visionRange != null ? visionRange : 3
+		);
+	}
+
+	private Document convertWaterSourceToDocument(WaterSource waterSource) {
+		Document doc = new Document();
+		doc.append("type", "waterSource");
+		doc.append("x", waterSource.getX());
+		doc.append("y", waterSource.getY());
+		doc.append("waterLevel", waterSource.getWaterLevel());
+		return doc;
+	}
+
+	private WaterSource convertDocumentToWaterSource(Document doc) {
+		Integer x = doc.getInteger("x");
+		Integer y = doc.getInteger("y");
+		Double waterLevel = doc.getDouble("waterLevel");
+
+		return new WaterSource(
+			x != null ? x : 0,
+			y != null ? y : 0,
+			waterLevel != null ? waterLevel : 100.0
+		);
+	}
+
+
+	// FILTERS
+	private Bson createTreeFilter(Tree tree) {
+		return Filters.and(
+			Filters.eq("type", "tree"),
+			Filters.eq("energy", tree.getEnergy()),
+			Filters.eq("alive", tree.isAlive()),
+			Filters.eq("symbol", String.valueOf(tree.getSymbol())),
+			Filters.eq("growthRate", tree.getGrowthRate()),
+			Filters.eq("energyThreshold", tree.getEnergyThreshold())
+		);
+	}
+
+	private Bson createCarnivoreFilter(Carnivore carnivore) {
+		return Filters.and(
+			Filters.eq("type", "carnivore"),
+			Filters.eq("energy", carnivore.getEnergy()),
+			Filters.eq("alive", carnivore.isAlive()),
+			Filters.eq("symbol", String.valueOf(carnivore.getSymbol())),
+			Filters.eq("visionRange", carnivore.getVisionRange()),
+			Filters.eq("movementSpeed", carnivore.getMovementSpeed())
+		);
+	}
+
+	private Bson createHerbivoreFilter(Herbivore herbivore) {
+		return Filters.and(
+			Filters.eq("type", "herbivore"),
+			Filters.eq("energy", herbivore.getEnergy()),
+			Filters.eq("alive", herbivore.isAlive()),
+			Filters.eq("symbol", String.valueOf(herbivore.getSymbol())),
+			Filters.eq("visionRange", herbivore.getVisionRange()),
+			Filters.eq("movementSpeed", herbivore.getMovementSpeed())
+		);
+	}
+
+	// POSITIONING
+	public boolean isPositionOccupied(Position position) {
+        // Check in trees collection
+        if (getTreeAtPosition(position) != null) return true;
+
+        // Check in carnivores collection
+        if (getCarnivoreAtPosition(position) != null) return true;
+
+        // Check in herbivores collection
+        if (getHerbivoreAtPosition(position) != null) return true;
+
+        // Check in water sources collection (they use x,y directly)
+        MongoCollection<Document> collection = database.getCollection("waterSources");
+        Bson filter = Filters.and(
+            Filters.eq("x", position.getX()),
+            Filters.eq("y", position.getY())
         );
+        return collection.countDocuments(filter) > 0;
+    }
+
+    public Tree getTreeAtPosition(Position position) {
+        MongoCollection<Document> collection = database.getCollection("trees");
+        Bson filter = Filters.and(
+            Filters.eq("position.x", position.getX()),
+            Filters.eq("position.y", position.getY())
+        );
+        Document doc = collection.find(filter).first();
+        return doc != null ? convertDocumentToTree(doc) : null;
+    }
+
+    public Carnivore getCarnivoreAtPosition(Position position) {
+        MongoCollection<Document> collection = database.getCollection("carnivores");
+        Bson filter = Filters.and(
+            Filters.eq("position.x", position.getX()),
+            Filters.eq("position.y", position.getY())
+        );
+        Document doc = collection.find(filter).first();
+        return doc != null ? convertDocumentToCarnivore(doc) : null;
+    }
+
+    public Herbivore getHerbivoreAtPosition(Position position) {
+        MongoCollection<Document> collection = database.getCollection("herbivores");
+        Bson filter = Filters.and(
+            Filters.eq("position.x", position.getX()),
+            Filters.eq("position.y", position.getY())
+        );
+        Document doc = collection.find(filter).first();
+        return doc != null ? convertDocumentToHerbivore(doc) : null;
     }
 
 }

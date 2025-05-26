@@ -10,6 +10,11 @@ public class Herbivore extends Animal {
 		super(position, energy, 'H', 1, 3);
 	}
 
+	public Herbivore(Position position, int energy, boolean alive, char symbol, int movementSpeed, int visionRange) {
+        super(position, energy, symbol, movementSpeed, visionRange);
+        this.alive = alive;
+    }
+
 	@Override
 	protected Position findClosestFood(Ecosystem ecosystem) {
 		Position closestFood = null;
