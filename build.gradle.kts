@@ -29,7 +29,7 @@ javafx {
 }
 
 application {
-    mainClass.set("com.wildsim.ui.MainCRUDWindow")
+    mainClass.set("com.wildsim.Main")
 }
 
 tasks.test {

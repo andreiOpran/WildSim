@@ -73,25 +73,25 @@ public class Ecosystem {
 		updateMatrix();
 	}
 
-public void displayMatrix() {
-    System.out.print("   ");
-    for (int j = 0; j < width; j++) {
-        System.out.print(j + " ");
-    }
-    System.out.println();
+	public void displayMatrix() {
+		System.out.print("   ");
+		for (int j = 0; j < width; j++) {
+			System.out.print(j + " ");
+		}
+		System.out.println();
 
-    // Print row numbers and matrix content
-    for (int i = 0; i < height; i++) {
-        System.out.print(i + " ");
-        if (i < 10) {
-            System.out.print(" ");
-        }
-        for (int j = 0; j < width; j++) {
-            System.out.print(matrix[i][j] + " ");
-        }
-        System.out.println();
-    }
-}
+		// Print row numbers and matrix content
+		for (int i = 0; i < height; i++) {
+			System.out.print(i + " ");
+			if (i < 10) {
+				System.out.print(" ");
+			}
+			for (int j = 0; j < width; j++) {
+				System.out.print(matrix[i][j] + " ");
+			}
+			System.out.println();
+		}
+	}
 
 	public void generateRandomTrees(int count) {
 		for (int i = 0; i < count; i++) {
@@ -127,5 +127,17 @@ public void displayMatrix() {
 				i--; // retry if position is unavailable
 			}
 		}
+	}
+
+	public int getWidth() {
+		return width;
+	}
+
+	public int getHeight() {
+		return height;
+	}
+
+	public char[][] getMatrix() {
+		return matrix;
 	}
 }

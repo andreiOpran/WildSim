@@ -5,15 +5,20 @@ import com.wildsim.model.organisms.Organism;
 import com.wildsim.model.organisms.animal.Carnivore;
 import com.wildsim.model.organisms.animal.Herbivore;
 import com.wildsim.model.organisms.plant.Tree;
+import com.wildsim.ui.EcosystemDisplay;
 
 import java.io.IOException;
 import java.util.*;
 
 public class EcosystemService {
 	private Ecosystem ecosystem;
+	private EcosystemDisplay ecosystemDisplay;
+	private int totalSteps;
+	private int currentStep;
 
 	public EcosystemService(int width, int height) {
 		this.ecosystem = new Ecosystem(width, height);
+		this.ecosystemDisplay = new EcosystemDisplay(ecosystem);
 	}
 
 	public void initializeEcosystem(int treesCount, int herbivoresCount, int carnivoresCount) {
@@ -23,18 +28,20 @@ public class EcosystemService {
 	}
 
 	public void runSimulation(int evolutionSteps) {
-		for(int i = 0; i < evolutionSteps; i++) {
-			System.out.println("EVOLUTION NUMBER " + (i + 1));
-			ecosystem.progressSimulation();
-			ecosystem.displayMatrix();
-			System.out.println("Press Enter for next evolution...");
-			try {
-				System.in.read();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
+		this.totalSteps = evolutionSteps;
+		this.currentStep = 0;
+		nextStep();
 	}
+
+    public void nextStep() {
+        if (currentStep < totalSteps) {
+            System.out.println("EVOLUTION NUMBER " + (currentStep + 1));
+            ecosystem.progressSimulation();
+            ecosystem.displayMatrix();
+            ecosystemDisplay.update();
+            currentStep++;
+        }
+    }
 
 	public Map<String, Integer> getStatistics() {
 		Map<String, Integer> stats = new HashMap<>();
@@ -78,5 +85,9 @@ public class EcosystemService {
 			System.out.println(entry.getKey() + ": " + entry.getValue());
 		}
 		System.out.println();
+	}
+
+	public EcosystemDisplay getEcosystemDisplay() {
+		return ecosystemDisplay;
 	}
 }
