@@ -32,4 +32,13 @@ public abstract class Animal extends Organism {
 
 	protected abstract Position findClosestFood(Ecosystem ecosystem);
 	protected abstract void eat(Organism food);
+
+
+	public int getVisionRange() {
+		return visionRange;
+	}
+
+	public int getMovementSpeed() {
+		return movementSpeed;
+	}
 }
