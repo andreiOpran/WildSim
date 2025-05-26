@@ -1,4 +1,7 @@
-package wildsim;
+package com.wildsim.model.organisms;
+
+import com.wildsim.environment.Ecosystem;
+import com.wildsim.environment.Position;
 
 public abstract class Organism {
 	protected Position position;

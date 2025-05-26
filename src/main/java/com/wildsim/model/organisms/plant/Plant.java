@@ -1,4 +1,8 @@
-package wildsim;
+package com.wildsim.model.organisms.plant;
+
+import com.wildsim.environment.Ecosystem;
+import com.wildsim.environment.Position;
+import com.wildsim.model.organisms.Organism;
 
 public class Plant extends Organism {
 	protected int growthRate;

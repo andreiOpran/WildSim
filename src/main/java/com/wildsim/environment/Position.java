@@ -1,4 +1,4 @@
-package wildsim;
+package com.wildsim.environment;
 
 import java.util.Objects;
 

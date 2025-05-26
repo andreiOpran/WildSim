@@ -1,4 +1,9 @@
-package wildsim;
+package com.wildsim.environment;
+
+import com.wildsim.model.organisms.plant.Tree;
+import com.wildsim.model.organisms.Organism;
+import com.wildsim.model.organisms.animal.Carnivore;
+import com.wildsim.model.organisms.animal.Herbivore;
 
 import java.util.ArrayList;
 import java.util.List;

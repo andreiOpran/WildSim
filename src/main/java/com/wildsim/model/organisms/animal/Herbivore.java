@@ -1,4 +1,9 @@
-package wildsim;
+package com.wildsim.model.organisms.animal;
+
+import com.wildsim.environment.Ecosystem;
+import com.wildsim.model.organisms.plant.Plant;
+import com.wildsim.environment.Position;
+import com.wildsim.model.organisms.Organism;
 
 public class Herbivore extends Animal {
 	public Herbivore (Position position, int energy) {

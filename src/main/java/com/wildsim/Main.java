@@ -1,4 +1,6 @@
-package wildsim;
+package com.wildsim;
+
+import com.wildsim.service.EcosystemService;
 
 public class Main {
 	public static void main(String[] args) {

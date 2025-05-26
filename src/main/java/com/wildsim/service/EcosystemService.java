@@ -1,4 +1,10 @@
-package wildsim;
+package com.wildsim.service;
+
+import com.wildsim.environment.Ecosystem;
+import com.wildsim.model.organisms.Organism;
+import com.wildsim.model.organisms.animal.Carnivore;
+import com.wildsim.model.organisms.animal.Herbivore;
+import com.wildsim.model.organisms.plant.Tree;
 
 import java.io.IOException;
 import java.util.*;
