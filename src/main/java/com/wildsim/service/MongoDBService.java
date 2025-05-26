@@ -331,7 +331,7 @@ public class MongoDBService {
 
 	private Document convertWaterSourceToDocument(WaterSource waterSource) {
 		Document doc = new Document();
-		doc.append("type", "waterSource");
+		doc.append("type", "water_source");
 		doc.append("x", waterSource.getX());
 		doc.append("y", waterSource.getY());
 		doc.append("waterLevel", waterSource.getWaterLevel());

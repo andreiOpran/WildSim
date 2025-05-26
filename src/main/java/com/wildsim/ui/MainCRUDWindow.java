@@ -205,6 +205,7 @@ public class MainCRUDWindow extends Application {
 
         Button updateBtn = new Button("Update");
         updateBtn.setOnAction(e -> updateTree());
+        updateBtn.setDisable(true);
 
         Button deleteBtn = new Button("Delete");
         deleteBtn.setOnAction(e -> deleteTree());
@@ -228,6 +229,10 @@ public class MainCRUDWindow extends Application {
                 treeSymbolField.setText(String.valueOf(newSelection.getSymbol()));
                 treeGrowthRateField.setText(String.valueOf(newSelection.getGrowthRate()));
                 treeEnergyThresholdField.setText(String.valueOf(newSelection.getEnergyThreshold()));
+
+                updateBtn.setDisable(false);  // Enable when row selected
+            } else {
+                updateBtn.setDisable(true);   // Disable when no selection
             }
         });
 
@@ -321,6 +326,7 @@ public class MainCRUDWindow extends Application {
 
         Button updateBtn = new Button("Update");
         updateBtn.setOnAction(e -> updateCarnivore());
+        updateBtn.setDisable(true);
 
         Button deleteBtn = new Button("Delete");
         deleteBtn.setOnAction(e -> deleteCarnivore());
@@ -344,6 +350,10 @@ public class MainCRUDWindow extends Application {
                 carnivoreSymbolField.setText(String.valueOf(newSelection.getSymbol()));
                 carnivoreSpeedField.setText(String.valueOf(newSelection.getMovementSpeed()));
                 carnivoreVisionField.setText(String.valueOf(newSelection.getVisionRange()));
+
+                updateBtn.setDisable(false);
+            } else {
+                updateBtn.setDisable(true);   // Disable when no selection
             }
         });
 
@@ -437,6 +447,7 @@ public class MainCRUDWindow extends Application {
 
         Button updateBtn = new Button("Update");
         updateBtn.setOnAction(e -> updateHerbivore());
+        updateBtn.setDisable(true);
 
         Button deleteBtn = new Button("Delete");
         deleteBtn.setOnAction(e -> deleteHerbivore());
@@ -460,6 +471,10 @@ public class MainCRUDWindow extends Application {
                 herbivoreSymbolField.setText(String.valueOf(newSelection.getSymbol()));
                 herbivoreSpeedField.setText(String.valueOf(newSelection.getMovementSpeed()));
                 herbivoreVisionField.setText(String.valueOf(newSelection.getVisionRange()));
+
+                updateBtn.setDisable(false);
+            } else {
+                updateBtn.setDisable(true);   // Disable when no selection
             }
         });
 
@@ -517,6 +532,7 @@ public class MainCRUDWindow extends Application {
 
         Button updateBtn = new Button("Update");
         updateBtn.setOnAction(e -> updateWaterSource());
+        updateBtn.setDisable(true);
 
         Button deleteBtn = new Button("Delete");
         deleteBtn.setOnAction(e -> deleteWaterSource());
@@ -536,6 +552,10 @@ public class MainCRUDWindow extends Application {
                 waterSourceXField.setText(String.valueOf(newSelection.getX()));
                 waterSourceYField.setText(String.valueOf(newSelection.getY()));
                 waterLevelField.setText(String.valueOf(newSelection.getWaterLevel()));
+
+                updateBtn.setDisable(false);
+            } else {
+                updateBtn.setDisable(true);   // Disable when no selection
             }
         });
 
