@@ -1,3 +1,5 @@
+package wildsim;
+
 public class Plant extends Organism {
 	protected int growthRate;
 	protected int energyThreshold;
@@ -32,3 +34,4 @@ public class Plant extends Organism {
 	}
 
 }
+

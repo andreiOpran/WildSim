@@ -1,3 +1,5 @@
+package wildsim;
+
 public abstract class Organism {
 	protected Position position;
 	protected int energy;

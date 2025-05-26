@@ -1,3 +1,5 @@
+package wildsim;
+
 public abstract class Animal extends Organism {
 	protected int movementSpeed;
 	protected int visionRange;

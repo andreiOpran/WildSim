@@ -1,3 +1,5 @@
+package wildsim;
+
 import java.util.Objects;
 
 public class Position {
@@ -50,3 +52,4 @@ public class Position {
 		return "(" + x + ", " + y + ")";
 	}
 }
+

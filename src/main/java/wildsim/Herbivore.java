@@ -1,3 +1,5 @@
+package wildsim;
+
 public class Herbivore extends Animal {
 	public Herbivore (Position position, int energy) {
 		super(position, energy, 'H', 1, 3);
@@ -47,3 +49,4 @@ public class Herbivore extends Animal {
 
 
 }
+

@@ -1,3 +1,5 @@
+package wildsim;
+
 public class Main {
 	public static void main(String[] args) {
 		EcosystemService service = new EcosystemService(10, 10);
