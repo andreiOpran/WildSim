@@ -6,6 +6,8 @@ import com.wildsim.model.organisms.animal.Carnivore;
 import com.wildsim.model.organisms.animal.Herbivore;
 import com.wildsim.model.organisms.plant.Tree;
 import com.wildsim.ui.EcosystemDisplay;
+import javafx.application.Platform;
+import javafx.scene.control.TextArea;
 
 import java.io.IOException;
 import java.util.*;
@@ -15,6 +17,8 @@ public class EcosystemService {
 	private EcosystemDisplay ecosystemDisplay;
 	private int totalSteps;
 	private int currentStep;
+	private TextArea logArea;
+
 
 	public EcosystemService(int width, int height) {
 		this.ecosystem = new Ecosystem(width, height);
@@ -35,8 +39,18 @@ public class EcosystemService {
 
     public void nextStep() {
         if (currentStep < totalSteps) {
-            System.out.println("EVOLUTION NUMBER " + (currentStep + 1));
-            ecosystem.progressSimulation();
+            log("\nEVOLUTION NUMBER " + (currentStep + 1));
+
+			// capture logs
+			List<String> stepLogs = new ArrayList<>();
+			ecosystem.progressSimulation(stepLogs);
+
+			//display logs
+			for (String logMessage : stepLogs) {
+				log(logMessage);
+			}
+
+            ecosystem.progressSimulation(stepLogs);
             ecosystem.displayMatrix();
             ecosystemDisplay.update();
             currentStep++;
@@ -87,7 +101,21 @@ public class EcosystemService {
 		System.out.println();
 	}
 
+	public void log(String message) {
+		System.out.println(message);
+		if (logArea != null) {
+			Platform.runLater(() -> {
+				logArea.appendText(message + "\n");
+				logArea.setScrollTop(Double.MAX_VALUE); // autoscroll to bottom
+			});
+		}
+	}
+
 	public EcosystemDisplay getEcosystemDisplay() {
 		return ecosystemDisplay;
+	}
+
+	public void setLogArea(TextArea logArea) {
+		this.logArea = logArea;
 	}
 }

@@ -31,7 +31,7 @@ public abstract class Animal extends Organism {
 	}
 
 	protected abstract Position findClosestFood(Ecosystem ecosystem);
-	protected abstract void eat(Organism food);
+	protected abstract String eat(Organism food);
 
 
 	public int getVisionRange() {

@@ -32,31 +32,33 @@ public class Herbivore extends Animal {
 	}
 
 	@Override
-	protected void eat(Organism food) {
+	protected String eat(Organism food) {
 		if (food instanceof Plant) {
 			energy += 10;
 			food.setEnergy(food.getEnergy() - 10);
 			food.checkDeath();
 			if (!food.isAlive()) {
-				System.out.println("Herbivore at " + position + " has eaten plant at " + food.getPosition());
+				return "Herbivore at " + position + " has eaten plant at " + food.getPosition();
 			}
 		}
+		return "";
 	}
 
 	@Override
-	public void live(Ecosystem ecosystem) {
+	public String live(Ecosystem ecosystem) {
 		Position foodPosition = findClosestFood(ecosystem);
 
 		if (foodPosition != null && position.distanceTo(foodPosition) <= 1) {
 			Organism food = ecosystem.getOrganismAt(foodPosition);
 			if (food instanceof Plant && food.isAlive()) {
-				eat(food);
+				String log = eat(food);
+				return log;
 			}
 		} else {
 			move(ecosystem);
 		}
+		return "";
 	}
-
 
 }
 

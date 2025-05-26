@@ -63,10 +63,13 @@ public class Ecosystem {
 		return position.getX() >= 0 && position.getX() < width && position.getY() >= 0 && position.getY() < height;
 	}
 
-	public void progressSimulation() {
+	public void progressSimulation(List<String> logs) {
 		for (Organism organism : organisms) {
 			if (organism.isAlive()) {
-				organism.live(this);
+				String logMessage = organism.live(this);
+				if (logMessage != null && !logMessage.isEmpty()) {
+					logs.add(logMessage);
+				}
 			}
 		}
 		organisms.removeIf(organism -> !organism.isAlive());

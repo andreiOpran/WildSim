@@ -15,17 +15,19 @@ public class Carnivore extends Animal {
     }
 
 	@Override
-	public void live(Ecosystem ecosystem) {
+	public String live(Ecosystem ecosystem) {
 		Position foodPosition = findClosestFood(ecosystem);
 
 		if(foodPosition != null && position.distanceTo(foodPosition) <= 1) {
 			Organism food = ecosystem.getOrganismAt(foodPosition);
 			if (food instanceof Herbivore && food.isAlive()) {
-				eat(food);
+				String log = eat(food);
+				return log;
 			}
 		} else {
 			move(ecosystem);
 		}
+		return "";
 	}
 
 	@Override
@@ -45,7 +47,7 @@ public class Carnivore extends Animal {
 		return closestFood;
 	}
 
-	protected void eat(Organism food) {
+	protected String eat(Organism food) {
 		if (food instanceof Herbivore) {
 			energy += 20;
 			// herbivore has 20% chance of living, but with minimal health
@@ -53,8 +55,9 @@ public class Carnivore extends Animal {
 				food.setEnergy(5);
 			} else {
 				food.setAlive(false);
-				System.out.println("Carnivore at " + position + " has eaten herbivore at " + food.getPosition());
+				return "Carnivore at " + position + " has eaten herbivore at " + food.getPosition();
 			}
 		}
+		return "";
 	}
 }

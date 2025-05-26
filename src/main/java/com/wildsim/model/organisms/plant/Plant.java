@@ -28,13 +28,14 @@ public class Plant extends Organism {
 	}
 
 	@Override
-	public void live(Ecosystem ecosystem) {
+	public String live(Ecosystem ecosystem) {
 		if (energy < energyThreshold) {
 			energy += growthRate;
 		}
 		if (energy > energyThreshold) {
 			energy = energyThreshold;
 		}
+		return "";
 	}
 
 }

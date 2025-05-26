@@ -45,7 +45,7 @@ public abstract class Organism {
 		this.energy = energy;
 	}
 
-    public abstract void live(Ecosystem ecosystem);
+    public abstract String live(Ecosystem ecosystem);
 
 	public void checkDeath() {
 		if (energy <= 0) {
