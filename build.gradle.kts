@@ -15,6 +15,10 @@ dependencies {
 
     // mongodb driver for java
     implementation("org.mongodb:mongodb-driver-sync:4.9.1")
+
+    // SLF4J API
+    implementation("org.slf4j:slf4j-api:2.0.9")
+    implementation("ch.qos.logback:logback-classic:1.4.11")
 }
 
 tasks.test {
