@@ -173,13 +173,13 @@ public class MongoDBService {
 
 	// WATER SOURCE
     public void createWaterSource(WaterSource waterSource) {
-        MongoCollection<Document> collection = database.getCollection("waterSources");
+        MongoCollection<Document> collection = database.getCollection("water_sources");
         Document doc = convertWaterSourceToDocument(waterSource);
         collection.insertOne(doc);
     }
 
     public List<WaterSource> getAllWaterSources() {
-        MongoCollection<Document> collection = database.getCollection("waterSources");
+        MongoCollection<Document> collection = database.getCollection("water_sources");
         List<WaterSource> waterSources = new ArrayList<>();
 
         for (Document doc : collection.find()) {
@@ -189,7 +189,7 @@ public class MongoDBService {
     }
 
     public WaterSource getWaterSourceByPosition(int x, int y) {
-        MongoCollection<Document> collection = database.getCollection("waterSources");
+        MongoCollection<Document> collection = database.getCollection("water_sources");
         Bson filter = Filters.and(
             Filters.eq("x", x),
             Filters.eq("y", y)
@@ -199,7 +199,7 @@ public class MongoDBService {
     }
 
 	public void updateWaterSource(WaterSource waterSource, int oldX, int oldY) {
-		MongoCollection<Document> collection = database.getCollection("waterSources");
+		MongoCollection<Document> collection = database.getCollection("water_sources");
 		Bson filter = Filters.and(
 			Filters.eq("x", oldX),
 			Filters.eq("y", oldY)
@@ -209,7 +209,7 @@ public class MongoDBService {
 	}
 
     public boolean deleteWaterSource(int x, int y) {
-        MongoCollection<Document> collection = database.getCollection("waterSources");
+        MongoCollection<Document> collection = database.getCollection("water_sources");
         Bson filter = Filters.and(
             Filters.eq("x", x),
             Filters.eq("y", y)
@@ -334,20 +334,23 @@ public class MongoDBService {
 	private Document convertWaterSourceToDocument(WaterSource waterSource) {
 		Document doc = new Document();
 		doc.append("type", "water_source");
-		doc.append("x", waterSource.getX());
-		doc.append("y", waterSource.getY());
+		doc.append("position", new Document()
+				.append("x", waterSource.getPosition().getX())
+				.append("y", waterSource.getPosition().getY()));
 		doc.append("waterLevel", waterSource.getWaterLevel());
 		return doc;
 	}
 
 	private WaterSource convertDocumentToWaterSource(Document doc) {
-		Integer x = doc.getInteger("x");
-		Integer y = doc.getInteger("y");
+		Document posDoc = (Document) doc.get("position");
+		Position position = new Position(
+			posDoc != null ? posDoc.getInteger("x", 0) : 0,
+			posDoc != null ? posDoc.getInteger("y", 0) : 0
+		);
 		Double waterLevel = doc.getDouble("waterLevel");
 
 		return new WaterSource(
-			x != null ? x : 0,
-			y != null ? y : 0,
+			position,
 			waterLevel != null ? waterLevel : 100.0
 		);
 	}

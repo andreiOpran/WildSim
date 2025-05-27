@@ -492,10 +492,14 @@ public class CRUDWindow extends Application {
         waterSourceTable = new TableView<>();
 
         TableColumn<WaterSource, Integer> xCol = new TableColumn<>("X");
-        xCol.setCellValueFactory(new PropertyValueFactory<>("x"));
+        xCol.setCellValueFactory(cellData ->
+                new javafx.beans.property.SimpleIntegerProperty(
+                        cellData.getValue().getPosition().getX()).asObject());
 
         TableColumn<WaterSource, Integer> yCol = new TableColumn<>("Y");
-        yCol.setCellValueFactory(new PropertyValueFactory<>("y"));
+        yCol.setCellValueFactory(cellData ->
+                new javafx.beans.property.SimpleIntegerProperty(
+                        cellData.getValue().getPosition().getY()).asObject());
 
         TableColumn<WaterSource, Double> waterLevelCol = new TableColumn<>("Water Level");
         waterLevelCol.setCellValueFactory(new PropertyValueFactory<>("waterLevel"));
@@ -546,11 +550,11 @@ public class CRUDWindow extends Application {
         // Set up selection listener
         waterSourceTable.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
-                originalWaterSourceXField.setText(String.valueOf(newSelection.getX()));
-                originalWaterSourceYField.setText(String.valueOf(newSelection.getY()));
+                originalWaterSourceXField.setText(String.valueOf(newSelection.getPosition().getX()));
+                originalWaterSourceYField.setText(String.valueOf(newSelection.getPosition().getY()));
 
-                waterSourceXField.setText(String.valueOf(newSelection.getX()));
-                waterSourceYField.setText(String.valueOf(newSelection.getY()));
+                waterSourceXField.setText(String.valueOf(newSelection.getPosition().getX()));
+                waterSourceYField.setText(String.valueOf(newSelection.getPosition().getY()));
                 waterLevelField.setText(String.valueOf(newSelection.getWaterLevel()));
 
                 updateBtn.setDisable(false);
@@ -865,7 +869,7 @@ public class CRUDWindow extends Application {
                 return;
             }
 
-            WaterSource waterSource = new WaterSource(x, y, waterLevel);
+            WaterSource waterSource = new WaterSource(position, waterLevel);
 
             dbService.createWaterSource(waterSource);
             refreshWaterSourceTable();
@@ -892,7 +896,7 @@ public class CRUDWindow extends Application {
                 return;
             }
 
-            WaterSource waterSource = new WaterSource(x, y, waterLevel);
+            WaterSource waterSource = new WaterSource(position, waterLevel);
 
             dbService.updateWaterSource(waterSource, originalX, originalY);
             refreshWaterSourceTable();

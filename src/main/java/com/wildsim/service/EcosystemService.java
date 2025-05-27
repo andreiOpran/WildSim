@@ -1,6 +1,8 @@
 package com.wildsim.service;
 
 import com.wildsim.environment.Ecosystem;
+import com.wildsim.model.environment.Environment;
+import com.wildsim.model.environment.WaterSource;
 import com.wildsim.model.organisms.Organism;
 import com.wildsim.model.organisms.animal.Carnivore;
 import com.wildsim.model.organisms.animal.Herbivore;
@@ -46,10 +48,11 @@ public class EcosystemService {
 		return instance;
 	}
 
-	public void initializeEcosystem(int treesCount, int herbivoresCount, int carnivoresCount) {
+	public void initializeEcosystem(int treesCount, int herbivoresCount, int carnivoresCount, int waterSourcesCount) {
 		ecosystem.generateRandomTrees(treesCount);
 		ecosystem.generateRandomHerbivores(herbivoresCount);
 		ecosystem.generateRandomCarnivores(carnivoresCount);
+		ecosystem.generateRandomWaterSources(waterSourcesCount);
 	}
 
 	public void runSimulation(int evolutionSteps) {
@@ -62,6 +65,7 @@ public class EcosystemService {
         if (currentStep < totalSteps) {
 			// load the organisms from the database
 			loadOrganismsFromDatabase();
+			loadEnvironmentsFromDatabase();
 
 			// update evolution label
 			if (evolutionLabel != null) {
@@ -80,6 +84,7 @@ public class EcosystemService {
 			}
 
 			saveOrganismsToDatabase();
+			saveEnvironmentsToDatabase();
             ecosystemDisplay.update();
             currentStep++;
         }
@@ -98,11 +103,13 @@ public class EcosystemService {
 			dbService.getDatabase().getCollection("trees").deleteMany(new Document());
 			dbService.getDatabase().getCollection("herbivores").deleteMany(new Document());
 			dbService.getDatabase().getCollection("carnivores").deleteMany(new Document());
+			dbService.getDatabase().getCollection("water_sources").deleteMany(new Document());
 		}
     }
 
 	private void loadOrganismsFromDatabase() {
 		ecosystem.clearOrganisms();
+		ecosystem.clearEnvironmentsList();
 
 		// load trees
 		List<Tree> trees = dbService.getAllTrees();
@@ -137,6 +144,28 @@ public class EcosystemService {
 				dbService.createHerbivore((Herbivore) organism);
 			} else if (organism instanceof Carnivore) {
 				dbService.createCarnivore((Carnivore) organism);
+			}
+		}
+	}
+
+	private void loadEnvironmentsFromDatabase() {
+		ecosystem.clearEnvironmentsList();
+
+		// load water sources
+		List<WaterSource> waterSources = dbService.getAllWaterSources();
+		for (WaterSource waterSource : waterSources) {
+			ecosystem.addEnvironment(waterSource);
+		}
+	}
+
+	private void saveEnvironmentsToDatabase() {
+		// clear existing data
+		dbService.getDatabase().getCollection("water_sources").deleteMany(new Document());
+
+		// save current state
+		for (Environment environment : ecosystem.getEnvironments()) {
+			if (environment instanceof WaterSource) {
+				dbService.createWaterSource((WaterSource) environment);
 			}
 		}
 	}

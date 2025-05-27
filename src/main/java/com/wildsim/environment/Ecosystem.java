@@ -1,5 +1,7 @@
 package com.wildsim.environment;
 
+import com.wildsim.model.environment.Environment;
+import com.wildsim.model.environment.WaterSource;
 import com.wildsim.model.organisms.plant.Tree;
 import com.wildsim.model.organisms.Organism;
 import com.wildsim.model.organisms.animal.Carnivore;
@@ -13,6 +15,7 @@ public class Ecosystem {
 	private int width;
 	private int height;
 	private List<Organism> organisms;
+	private List<Environment> environments;
 	private char[][] matrix;
 	private MongoDBService dbService;
 
@@ -20,6 +23,7 @@ public class Ecosystem {
 		this.width = width;
 		this.height = height;
 		this.organisms = new ArrayList<>();
+		this.environments = new ArrayList<>();
 		this.matrix = new char[height][width];
 		for (int i = 0; i < height; i++) {
 			for (int j = 0; j < width; j++) {
@@ -41,6 +45,11 @@ public class Ecosystem {
 				matrix[pos.getY()][pos.getX()] = organism.getSymbol();
 			}
 		}
+
+		for (Environment environment : environments) {
+			Position pos = environment.getPosition();
+			matrix[pos.getY()][pos.getX()] = environment.getSymbol();
+		}
 	}
 
 	public void addOrganism(Organism organism) {
@@ -59,6 +68,18 @@ public class Ecosystem {
 		}
 	}
 
+	public void addEnvironment(Environment environment) {
+		if (isValidPosition(environment.getPosition())) {
+			environments.add(environment);
+			if (dbService != null) {
+				if (environment instanceof WaterSource) {
+					dbService.createWaterSource((WaterSource) environment);
+				}
+			}
+			updateMatrix();
+		}
+	}
+
 	public void clearOrganisms() {
 		organisms.clear();
 		for (int i = 0; i < height; i++) {
@@ -66,6 +87,10 @@ public class Ecosystem {
 				matrix[i][j] = '.';
 			}
 		}
+	}
+
+	public void clearEnvironmentsList() {
+		environments.clear();
 	}
 
 	public Organism getOrganismAt(Position position) {
@@ -153,6 +178,18 @@ public class Ecosystem {
 		}
 	}
 
+	public void generateRandomWaterSources(int count) {
+		for (int i = 0; i < count; i++) {
+			Position position = Position.randomPosition(width, height);
+			if (getOrganismAt(position) == null) {
+				WaterSource waterSource = new WaterSource(position, 100);
+				addEnvironment(waterSource);
+			} else {
+				i--; // retry if position is unavailable
+			}
+		}
+	}
+
 	public int getWidth() {
 		return width;
 	}
@@ -163,5 +200,9 @@ public class Ecosystem {
 
 	public char[][] getMatrix() {
 		return matrix;
+	}
+
+	public List<Environment> getEnvironments() {
+		return environments;
 	}
 }

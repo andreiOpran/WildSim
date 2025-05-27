@@ -30,7 +30,7 @@ public class SimulationUI {
         // Initialize service
         EcosystemService.initializeInstance(10, 10);
         service = EcosystemService.getInstance();
-        service.initializeEcosystem(10, 5, 3);
+        service.initializeEcosystem(10, 5, 3, 3);
         service.setLogArea(logArea);
         service.setEvolutionLabel(evolutionLabel);
 
