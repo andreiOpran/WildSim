@@ -435,4 +435,7 @@ public class MongoDBService {
         return doc != null ? convertDocumentToHerbivore(doc) : null;
     }
 
+	public MongoDatabase getDatabase() {
+		return database;
+	}
 }

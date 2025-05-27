@@ -9,6 +9,7 @@ import com.wildsim.ui.EcosystemDisplay;
 import javafx.application.Platform;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.Label;
+import org.bson.Document;
 
 import java.util.*;
 
@@ -19,11 +20,13 @@ public class EcosystemService {
 	private int currentStep;
 	private TextArea logArea;
 	private Label evolutionLabel;
+	private MongoDBService dbService;
 
 
 	public EcosystemService(int width, int height) {
 		this.ecosystem = new Ecosystem(width, height);
 		this.ecosystemDisplay = new EcosystemDisplay(ecosystem);
+		this.dbService = new MongoDBService();
 	}
 
 	public void initializeEcosystem(int treesCount, int herbivoresCount, int carnivoresCount) {
@@ -40,6 +43,9 @@ public class EcosystemService {
 
     public void nextStep() {
         if (currentStep < totalSteps) {
+			// load the organisms from the database
+			loadOrganismsFromDatabase();
+
 			// update evolution label
 			if (evolutionLabel != null) {
 				Platform.runLater(() -> evolutionLabel.setText("EVOLUTION NUMBER " + (currentStep)));
@@ -47,6 +53,8 @@ public class EcosystemService {
 
 			// capture logs
 			List<String> stepLogs = new ArrayList<>();
+
+			// run simulation
 			ecosystem.progressSimulation(stepLogs);
 
 			// display logs
@@ -54,18 +62,68 @@ public class EcosystemService {
 				log("(EVO" + (currentStep) + ") " + logMessage);
 			}
 
-            ecosystem.progressSimulation(stepLogs);
+			saveOrganismsToDatabase();
             ecosystemDisplay.update();
             currentStep++;
         }
 		else {
+			// end of simulation
+			// update label
 			if (evolutionLabel != null) {
 				Platform.runLater(() -> evolutionLabel.setText("Simulation completed."));
 			}
 			log ("\nEcosystem statistics after " + totalSteps + " steps:");
+
+			// statistics
 			displayStatistics();
+//				dbService.saveEcosystemStatistics(getStatistics());
+
+			// clear the database collections
+			dbService.getDatabase().getCollection("trees").deleteMany(new Document());
+			dbService.getDatabase().getCollection("herbivores").deleteMany(new Document());
+			dbService.getDatabase().getCollection("carnivores").deleteMany(new Document());
 		}
     }
+
+	private void loadOrganismsFromDatabase() {
+		ecosystem.clearOrganisms();
+
+		// load trees
+		List<Tree> trees = dbService.getAllTrees();
+		for (Tree tree : trees) {
+			ecosystem.addOrganism(tree);
+		}
+
+		// load herbivores
+		List<Herbivore> herbivores = dbService.getAllHerbivores();
+		for (Herbivore herbivore : herbivores) {
+			ecosystem.addOrganism(herbivore);
+		}
+
+		// load carnivores
+		List<Carnivore> carnivores = dbService.getAllCarnivores();
+		for (Carnivore carnivore : carnivores) {
+			ecosystem.addOrganism(carnivore);
+		}
+	}
+
+	private void saveOrganismsToDatabase() {
+		// clear existing data
+		dbService.getDatabase().getCollection("trees").deleteMany(new Document());
+		dbService.getDatabase().getCollection("herbivores").deleteMany(new Document());
+		dbService.getDatabase().getCollection("carnivores").deleteMany(new Document());
+
+		// save current state
+		for (Organism organism : ecosystem.getOrganisms()) {
+			if (organism instanceof Tree) {
+				dbService.createTree((Tree) organism);
+			} else if (organism instanceof Herbivore) {
+				dbService.createHerbivore((Herbivore) organism);
+			} else if (organism instanceof Carnivore) {
+				dbService.createCarnivore((Carnivore) organism);
+			}
+		}
+	}
 
 	public Map<String, Integer> getStatistics() {
 		Map<String, Integer> stats = new HashMap<>();
@@ -104,17 +162,13 @@ public class EcosystemService {
 
 	public void displayStatistics() {
 		Map<String, Integer> stats = getStatistics();
-		System.out.println("Ecosystem Statistics:");
 		for (Map.Entry<String, Integer> entry : stats.entrySet()) {
-			System.out.println(entry.getKey() + ": " + entry.getValue());
 			log(entry.getKey() + ": " + entry.getValue());
 		}
 		log(" ");
-		System.out.println();
 	}
 
 	public void log(String message) {
-		System.out.println(message);
 		if (logArea != null) {
 			Platform.runLater(() -> {
 				logArea.appendText(message + "\n");

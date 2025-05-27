@@ -4,6 +4,7 @@ import com.wildsim.model.organisms.plant.Tree;
 import com.wildsim.model.organisms.Organism;
 import com.wildsim.model.organisms.animal.Carnivore;
 import com.wildsim.model.organisms.animal.Herbivore;
+import com.wildsim.service.MongoDBService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,7 @@ public class Ecosystem {
 	private int height;
 	private List<Organism> organisms;
 	private char[][] matrix;
+	private MongoDBService dbService;
 
 	public Ecosystem(int width, int height) {
 		this.width = width;
@@ -24,6 +26,7 @@ public class Ecosystem {
 				matrix[i][j] = '.';
 			}
 		}
+		dbService = new MongoDBService();
 	}
 
 	public void updateMatrix() {
@@ -43,7 +46,25 @@ public class Ecosystem {
 	public void addOrganism(Organism organism) {
 		if (isValidPosition(organism.getPosition())) {
 			organisms.add(organism);
+			if (dbService != null) {
+				if (organism instanceof Tree) {
+					dbService.createTree((Tree) organism);
+				} else if (organism instanceof Herbivore) {
+					dbService.createHerbivore((Herbivore) organism);
+				} else if (organism instanceof Carnivore) {
+					dbService.createCarnivore((Carnivore) organism);
+				}
+			}
 			updateMatrix();
+		}
+	}
+
+	public void clearOrganisms() {
+		organisms.clear();
+		for (int i = 0; i < height; i++) {
+			for (int j = 0; j < width; j++) {
+				matrix[i][j] = '.';
+			}
 		}
 	}
 
