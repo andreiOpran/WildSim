@@ -8,8 +8,8 @@ import com.wildsim.model.organisms.plant.Tree;
 import com.wildsim.ui.EcosystemDisplay;
 import javafx.application.Platform;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.Label;
 
-import java.io.IOException;
 import java.util.*;
 
 public class EcosystemService {
@@ -18,6 +18,7 @@ public class EcosystemService {
 	private int totalSteps;
 	private int currentStep;
 	private TextArea logArea;
+	private Label evolutionLabel;
 
 
 	public EcosystemService(int width, int height) {
@@ -39,22 +40,31 @@ public class EcosystemService {
 
     public void nextStep() {
         if (currentStep < totalSteps) {
-            log("\nEVOLUTION NUMBER " + (currentStep + 1));
+			// update evolution label
+			if (evolutionLabel != null) {
+				Platform.runLater(() -> evolutionLabel.setText("EVOLUTION NUMBER " + (currentStep)));
+			}
 
 			// capture logs
 			List<String> stepLogs = new ArrayList<>();
 			ecosystem.progressSimulation(stepLogs);
 
-			//display logs
+			// display logs
 			for (String logMessage : stepLogs) {
-				log(logMessage);
+				log("(EVO" + (currentStep) + ") " + logMessage);
 			}
 
             ecosystem.progressSimulation(stepLogs);
-            ecosystem.displayMatrix();
             ecosystemDisplay.update();
             currentStep++;
         }
+		else {
+			if (evolutionLabel != null) {
+				Platform.runLater(() -> evolutionLabel.setText("Simulation completed."));
+			}
+			log ("\nEcosystem statistics after " + totalSteps + " steps:");
+			displayStatistics();
+		}
     }
 
 	public Map<String, Integer> getStatistics() {
@@ -97,7 +107,9 @@ public class EcosystemService {
 		System.out.println("Ecosystem Statistics:");
 		for (Map.Entry<String, Integer> entry : stats.entrySet()) {
 			System.out.println(entry.getKey() + ": " + entry.getValue());
+			log(entry.getKey() + ": " + entry.getValue());
 		}
+		log(" ");
 		System.out.println();
 	}
 
@@ -118,4 +130,8 @@ public class EcosystemService {
 	public void setLogArea(TextArea logArea) {
 		this.logArea = logArea;
 	}
+
+	public void setEvolutionLabel(Label evolutionLabel) {
+        this.evolutionLabel = evolutionLabel;
+    }
 }
