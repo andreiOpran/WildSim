@@ -35,7 +35,7 @@ public class EcosystemDisplay extends StackPane {
 	private void loadTextures() {
 		textures.put('.', new Image(getClass().getResourceAsStream("/images/empty.png")));
 		textures.put('T', new Image(getClass().getResourceAsStream("/images/tree.png")));
-		textures.put('H', new Image(getClass().getResourceAsStream("/images/herbivore.png")));
+		textures.put('H', new Image(getClass().getResourceAsStream("/images/herbivore_2.png")));
 		textures.put('C', new Image(getClass().getResourceAsStream("/images/carnivore.png")));
 		textures.put('W', new Image(getClass().getResourceAsStream("/images/water_source.png")));
 	}
