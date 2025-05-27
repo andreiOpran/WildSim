@@ -14,6 +14,8 @@ import org.bson.Document;
 import java.util.*;
 
 public class EcosystemService {
+	private static EcosystemService instance;
+
 	private Ecosystem ecosystem;
 	private EcosystemDisplay ecosystemDisplay;
 	private int totalSteps;
@@ -23,10 +25,25 @@ public class EcosystemService {
 	private MongoDBService dbService;
 
 
-	public EcosystemService(int width, int height) {
+	private EcosystemService(int width, int height) {
 		this.ecosystem = new Ecosystem(width, height);
 		this.ecosystemDisplay = new EcosystemDisplay(ecosystem);
 		this.dbService = new MongoDBService();
+	}
+
+	private EcosystemService() {
+        this.dbService = new MongoDBService();
+    }
+
+	public static void initializeInstance(int width, int height) {
+		instance = new EcosystemService(width, height);
+	}
+
+	public static EcosystemService getInstance() {
+		if (instance == null) {
+			instance = new EcosystemService();
+		}
+		return instance;
 	}
 
 	public void initializeEcosystem(int treesCount, int herbivoresCount, int carnivoresCount) {
@@ -76,7 +93,6 @@ public class EcosystemService {
 
 			// statistics
 			displayStatistics();
-//				dbService.saveEcosystemStatistics(getStatistics());
 
 			// clear the database collections
 			dbService.getDatabase().getCollection("trees").deleteMany(new Document());
@@ -166,6 +182,7 @@ public class EcosystemService {
 			log(entry.getKey() + ": " + entry.getValue());
 		}
 		log(" ");
+		dbService.saveEcosystemStatistics(stats);
 	}
 
 	public void log(String message) {

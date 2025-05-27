@@ -11,11 +11,13 @@ import com.wildsim.model.organisms.animal.Carnivore;
 import com.wildsim.model.organisms.animal.Herbivore;
 import com.wildsim.model.organisms.plant.Tree;
 import com.wildsim.model.environment.WaterSource;
+import java.util.Date;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class MongoDBService {
 	private final MongoDatabase database;
@@ -434,6 +436,14 @@ public class MongoDBService {
         Document doc = collection.find(filter).first();
         return doc != null ? convertDocumentToHerbivore(doc) : null;
     }
+
+	public void saveEcosystemStatistics(Map<String, Integer> statistics) {
+		Document doc = new Document()
+					   .append("timestamp", new Date())
+					   .append("statistics", new Document(statistics));
+
+		getDatabase().getCollection("ecosystem_statistics").insertOne(doc);
+	}
 
 	public MongoDatabase getDatabase() {
 		return database;

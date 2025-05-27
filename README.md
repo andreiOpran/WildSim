@@ -3,5 +3,4 @@
 
 ### TODO:
 
-- implement statistics inserted in the database at end of simulation
-- refresh button in th crud manager
+- refresh button in the crud manager
