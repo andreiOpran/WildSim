@@ -3,6 +3,6 @@
 
 ### TODO:
 
-- better entity logic (herbivores and carnivores interact with water sources)
+- better entity logic (herbivores and carnivores interact with water sources, etc.)
 - csv logging for CRUD actions (action name, timestamp)
 - more texture variants
