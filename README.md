@@ -1,1 +1,7 @@
-![image](https://github.com/user-attachments/assets/44c5329a-ace1-406b-8c97-a8274985a7ba)
+![img.png](img.png)
+
+
+### TODO:
+
+- implement statistics inserted in the database at end of simulation
+- refresh button in th crud manager

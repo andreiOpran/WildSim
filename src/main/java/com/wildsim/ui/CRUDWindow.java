@@ -934,5 +934,5 @@ public class CRUDWindow extends Application {
 
     public static void main(String[] args) {
         launch(args);
-    }
+    }x
 }
