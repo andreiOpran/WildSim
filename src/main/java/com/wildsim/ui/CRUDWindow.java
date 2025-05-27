@@ -19,7 +19,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-public class MainCRUDWindow extends Application {
+public class CRUDWindow extends Application {
     private MongoDBService dbService;
 
     // Trees

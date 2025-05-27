@@ -32,6 +32,17 @@ application {
     mainClass.set("com.wildsim.Main")
 }
 
+tasks.register<JavaExec>("runCrudWindow") {
+    group = "application"
+    description = "Runs the CRUD Window application"
+    mainClass.set("com.wildsim.ui.MainCRUDWindow")
+    classpath = sourceSets["main"].runtimeClasspath
+    jvmArgs = listOf(
+        "--module-path", classpath.asPath,
+        "--add-modules", "javafx.controls,javafx.fxml"
+    )
+}
+
 tasks.test {
     useJUnitPlatform()
 }

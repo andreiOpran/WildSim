@@ -94,9 +94,27 @@ public class SimulationUI {
             if (event.getCode() == KeyCode.SPACE && stepCount < maxSteps) {
                 service.nextStep();
                 stepCount++;
+            } else if (event.getCode() == KeyCode.C) {
+                // Open CRUD window
+                openCrudWindow();
             }
         });
         return scene;
+    }
+
+    private void openCrudWindow() {
+        // new stage for the CRUD window
+        Stage crudStage = new Stage();
+
+        // inistialize crud window
+        CRUDWindow crudWindow = new CRUDWindow();
+        crudWindow.start(crudStage);
+
+//        crudStage.setWidth(400);
+//        crudStage.setHeight(960);
+        crudStage.setMinWidth(400);
+        crudStage.setMinHeight(990);
+        crudStage.sizeToScene();
     }
 
     private void configureStage(Stage primaryStage, Scene scene) {
