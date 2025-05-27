@@ -213,7 +213,10 @@ public class CRUDWindow extends Application {
         Button clearBtn = new Button("Clear Form");
         clearBtn.setOnAction(e -> clearTreeForm());
 
-        HBox buttonBox = new HBox(10, createBtn, updateBtn, deleteBtn, clearBtn);
+        Button refreshBtn = new Button("Refresh");
+        refreshBtn.setOnAction(e -> refreshTreeTable());
+
+        HBox buttonBox = new HBox(10, createBtn, updateBtn, deleteBtn, clearBtn, refreshBtn);
         buttonBox.setPadding(new Insets(10));
 
         // Set up selection listener
@@ -334,7 +337,10 @@ public class CRUDWindow extends Application {
         Button clearBtn = new Button("Clear Form");
         clearBtn.setOnAction(e -> clearCarnivoreForm());
 
-        HBox buttonBox = new HBox(10, createBtn, updateBtn, deleteBtn, clearBtn);
+        Button refreshBtn = new Button("Refresh");
+        refreshBtn.setOnAction(e -> refreshCarnivoreTable());
+
+        HBox buttonBox = new HBox(10, createBtn, updateBtn, deleteBtn, clearBtn, refreshBtn);
         buttonBox.setPadding(new Insets(10));
 
         // Set up selection listener
@@ -455,7 +461,10 @@ public class CRUDWindow extends Application {
         Button clearBtn = new Button("Clear Form");
         clearBtn.setOnAction(e -> clearHerbivoreForm());
 
-        HBox buttonBox = new HBox(10, createBtn, updateBtn, deleteBtn, clearBtn);
+        Button refreshBtn = new Button("Refresh");
+        refreshBtn.setOnAction(e -> refreshHerbivoreTable());
+
+        HBox buttonBox = new HBox(10, createBtn, updateBtn, deleteBtn, clearBtn, refreshBtn);
         buttonBox.setPadding(new Insets(10));
 
         // Set up selection listener
@@ -544,7 +553,10 @@ public class CRUDWindow extends Application {
         Button clearBtn = new Button("Clear Form");
         clearBtn.setOnAction(e -> clearWaterSourceForm());
 
-        HBox buttonBox = new HBox(10, createBtn, updateBtn, deleteBtn, clearBtn);
+        Button refreshBtn = new Button("Refresh");
+        refreshBtn.setOnAction(e -> refreshWaterSourceTable());
+
+        HBox buttonBox = new HBox(10, createBtn, updateBtn, deleteBtn, clearBtn, refreshBtn);
         buttonBox.setPadding(new Insets(10));
 
         // Set up selection listener

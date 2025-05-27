@@ -3,8 +3,11 @@ package com.wildsim.model.organisms.animal;
 import com.wildsim.environment.Ecosystem;
 import com.wildsim.environment.Position;
 import com.wildsim.model.organisms.Organism;
+import com.wildsim.service.EcosystemService;
 
 public class Carnivore extends Animal {
+	EcosystemService ecosystemService = EcosystemService.getInstance();
+
 	public Carnivore(Position position, int energy) {
 		super(position, energy, 'C', 2, 5);
 	}
@@ -53,6 +56,7 @@ public class Carnivore extends Animal {
 			// herbivore has 20% chance of living, but with minimal health
 			if (Math.random() < 0.2) {
 				food.setEnergy(5);
+				return "Carnivore at " + position + " has spared herbivore at " + food.getPosition() + " with minimal energy.";
 			} else {
 				food.setAlive(false);
 				return "Carnivore at " + position + " has eaten herbivore at " + food.getPosition();
