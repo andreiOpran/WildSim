@@ -30,7 +30,7 @@ public class Ecosystem {
 				matrix[i][j] = '.';
 			}
 		}
-		dbService = new MongoDBService();
+		dbService = MongoDBService.getInstance();
 	}
 
 	public void updateMatrix() {

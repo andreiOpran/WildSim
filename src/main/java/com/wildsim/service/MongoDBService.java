@@ -19,19 +19,30 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class MongoDBService {
+public class MongoDBService implements AutoCloseable {
 	private final MongoDatabase database;
+	private final CSVLogService csvLogService;
 
-	public MongoDBService() {
+	private MongoDBService() {
 		this.database = MongoDBConfig.getDatabase();
+		this.csvLogService = CSVLogService.getInstance();
 	}
 
+	private static class SingletonHolder {
+		private static final MongoDBService INSTANCE = new MongoDBService();
+
+	}
+
+	public static MongoDBService getInstance() {
+		return SingletonHolder.INSTANCE;
+	}
 
 	// TREES
 	public void createTree(Tree tree) {
 		MongoCollection<Document> collection = database.getCollection("trees");
 		Document doc = convertTreeToDocument(tree);
 		collection.insertOne(doc);
+		csvLogService.logAction("Created tree at position: " + tree.getPosition() + " with energy: " + tree.getEnergy());
 	}
 
 	public List<Tree> getAllTrees() {
@@ -41,6 +52,7 @@ public class MongoDBService {
 		for (Document doc : collection.find()) {
 			trees.add(convertDocumentToTree(doc));
 		}
+		csvLogService.logAction("Retrieved all trees from the database.");
 		return trees;
 	}
 
@@ -51,6 +63,7 @@ public class MongoDBService {
 				Filters.eq("positions.y", position.getY())
 		);
 		Document doc = collection.find(filter).first();
+		csvLogService.logAction("Retrieved tree at position: " + position);
 		return doc != null ? convertDocumentToTree(doc) : null;
 	}
 
@@ -61,6 +74,11 @@ public class MongoDBService {
 			Filters.eq("position.y", oldPosition.getY())
 		);
 		Document doc = convertTreeToDocument(tree);
+		if (oldPosition.getX() != tree.getPosition().getX() && oldPosition.getY() != tree.getPosition().getY()) {
+			csvLogService.logAction("Updated tree at position: " + oldPosition + " to new position: " + tree.getPosition() + " with energy: " + tree.getEnergy());
+		} else {
+			csvLogService.logAction("Updated tree at position: " + oldPosition + " with energy: " + tree.getEnergy());
+		}
 		collection.replaceOne(filter, doc, new ReplaceOptions().upsert(true));
 	}
 
@@ -71,6 +89,7 @@ public class MongoDBService {
 			Filters.eq("position.y", position.getY())
 		);
 		DeleteResult result = collection.deleteOne(filter);
+		csvLogService.logAction("Deleted tree at position: " + position);
 		return result.getDeletedCount() > 0;
 	}
 
@@ -80,6 +99,7 @@ public class MongoDBService {
         MongoCollection<Document> collection = database.getCollection("carnivores");
         Document doc = convertCarnivoreToDocument(carnivore);
         collection.insertOne(doc);
+		csvLogService.logAction("Created carnivore at position: " + carnivore.getPosition() + " with energy: " + carnivore.getEnergy());
     }
 
     public List<Carnivore> getAllCarnivores() {
@@ -89,6 +109,7 @@ public class MongoDBService {
         for (Document doc : collection.find()) {
             carnivores.add(convertDocumentToCarnivore(doc));
         }
+		csvLogService.logAction("Retrieved all carnivores from the database.");
         return carnivores;
     }
 
@@ -99,6 +120,7 @@ public class MongoDBService {
             Filters.eq("position.y", position.getY())
         );
         Document doc = collection.find(filter).first();
+		csvLogService.logAction("Retrieved carnivore at position: " + position);
         return doc != null ? convertDocumentToCarnivore(doc) : null;
     }
 
@@ -109,6 +131,11 @@ public class MongoDBService {
 			Filters.eq("position.y", oldPosition.getY())
 		);
 		Document doc = convertCarnivoreToDocument(carnivore);
+		if (oldPosition.getX() != carnivore.getPosition().getX() && oldPosition.getY() != carnivore.getPosition().getY()) {
+			csvLogService.logAction("Updated carnivore at position: " + oldPosition + " to new position: " + carnivore.getPosition() + " with energy: " + carnivore.getEnergy());
+		} else {
+			csvLogService.logAction("Updated carnivore at position: " + oldPosition + " with energy: " + carnivore.getEnergy());
+		}
 		collection.replaceOne(filter, doc, new ReplaceOptions().upsert(true));
 	}
 
@@ -119,6 +146,7 @@ public class MongoDBService {
             Filters.eq("position.y", position.getY())
         );
         DeleteResult result = collection.deleteOne(filter);
+		csvLogService.logAction("Deleted carnivore at position: " + position);
         return result.getDeletedCount() > 0;
     }
 
@@ -128,6 +156,7 @@ public class MongoDBService {
         MongoCollection<Document> collection = database.getCollection("herbivores");
         Document doc = convertHerbivoreToDocument(herbivore);
         collection.insertOne(doc);
+		csvLogService.logAction("Created herbivore at position: " + herbivore.getPosition() + " with energy: " + herbivore.getEnergy());
     }
 
     public List<Herbivore> getAllHerbivores() {
@@ -137,6 +166,7 @@ public class MongoDBService {
         for (Document doc : collection.find()) {
             herbivores.add(convertDocumentToHerbivore(doc));
         }
+		csvLogService.logAction("Retrieved all herbivores from the database.");
         return herbivores;
     }
 
@@ -147,6 +177,7 @@ public class MongoDBService {
             Filters.eq("position.y", position.getY())
         );
         Document doc = collection.find(filter).first();
+		csvLogService.logAction("Retrieved herbivore at position: " + position);
         return doc != null ? convertDocumentToHerbivore(doc) : null;
     }
 
@@ -157,6 +188,11 @@ public class MongoDBService {
 			Filters.eq("position.y", oldPosition.getY())
 		);
 		Document doc = convertHerbivoreToDocument(herbivore);
+		if (oldPosition.getX() != herbivore.getPosition().getX() && oldPosition.getY() != herbivore.getPosition().getY()) {
+			csvLogService.logAction("Updated herbivore at position: " + oldPosition + " to new position: " + herbivore.getPosition() + " with energy: " + herbivore.getEnergy());
+		} else {
+			csvLogService.logAction("Updated herbivore at position: " + oldPosition + " with energy: " + herbivore.getEnergy());
+		}
 		collection.replaceOne(filter, doc, new ReplaceOptions().upsert(true));
 	}
 
@@ -167,6 +203,7 @@ public class MongoDBService {
             Filters.eq("position.y", position.getY())
         );
         DeleteResult result = collection.deleteOne(filter);
+		csvLogService.logAction("Deleted herbivore at position: " + position);
         return result.getDeletedCount() > 0;
     }
 
@@ -175,6 +212,7 @@ public class MongoDBService {
     public void createWaterSource(WaterSource waterSource) {
         MongoCollection<Document> collection = database.getCollection("water_sources");
         Document doc = convertWaterSourceToDocument(waterSource);
+		csvLogService.logAction("Created water source at position: " + waterSource.getPosition() + " with water level: " + waterSource.getWaterLevel());
         collection.insertOne(doc);
     }
 
@@ -185,6 +223,7 @@ public class MongoDBService {
         for (Document doc : collection.find()) {
             waterSources.add(convertDocumentToWaterSource(doc));
         }
+		csvLogService.logAction("Retrieved all water sources from the database.");
         return waterSources;
     }
 
@@ -195,6 +234,7 @@ public class MongoDBService {
             Filters.eq("y", y)
         );
         Document doc = collection.find(filter).first();
+		csvLogService.logAction("Retrieved water source at position: (" + x + ", " + y + ")");
         return doc != null ? convertDocumentToWaterSource(doc) : null;
     }
 
@@ -206,6 +246,11 @@ public class MongoDBService {
 		);
 		Document doc = convertWaterSourceToDocument(waterSource);
 		collection.replaceOne(filter, doc, new ReplaceOptions().upsert(true));
+		if (oldX != waterSource.getPosition().getX() || oldY != waterSource.getPosition().getY()) {
+			csvLogService.logAction("Updated water source at position: (" + oldX + ", " + oldY + ") to new position: (" + waterSource.getPosition().getX() + ", " + waterSource.getPosition().getY() + ") with water level: " + waterSource.getWaterLevel());
+		} else {
+			csvLogService.logAction("Updated water source at position: (" + oldX + ", " + oldY + ") with water level: " + waterSource.getWaterLevel());
+		}
 	}
 
     public boolean deleteWaterSource(int x, int y) {
@@ -215,6 +260,7 @@ public class MongoDBService {
             Filters.eq("y", y)
         );
         DeleteResult result = collection.deleteOne(filter);
+		csvLogService.logAction("Deleted water source at position: (" + x + ", " + y + ")");
         return result.getDeletedCount() > 0;
     }
 
@@ -417,6 +463,7 @@ public class MongoDBService {
             Filters.eq("position.y", position.getY())
         );
         Document doc = collection.find(filter).first();
+		csvLogService.logAction("Retrieved tree at position: " + position);
         return doc != null ? convertDocumentToTree(doc) : null;
     }
 
@@ -427,6 +474,7 @@ public class MongoDBService {
             Filters.eq("position.y", position.getY())
         );
         Document doc = collection.find(filter).first();
+		csvLogService.logAction("Retrieved carnivore at position: " + position);
         return doc != null ? convertDocumentToCarnivore(doc) : null;
     }
 
@@ -437,6 +485,7 @@ public class MongoDBService {
             Filters.eq("position.y", position.getY())
         );
         Document doc = collection.find(filter).first();
+		csvLogService.logAction("Retrieved herbivore at position: " + position);
         return doc != null ? convertDocumentToHerbivore(doc) : null;
     }
 
@@ -450,5 +499,10 @@ public class MongoDBService {
 
 	public MongoDatabase getDatabase() {
 		return database;
+	}
+
+	@Override
+	public void close() {
+		MongoDBConfig.closeConnection();
 	}
 }

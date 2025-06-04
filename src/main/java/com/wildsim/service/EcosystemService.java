@@ -25,16 +25,19 @@ public class EcosystemService {
 	private TextArea logArea;
 	private Label evolutionLabel;
 	private MongoDBService dbService;
+	private final CSVLogService csvLogService;
 
 
 	private EcosystemService(int width, int height) {
 		this.ecosystem = new Ecosystem(width, height);
 		this.ecosystemDisplay = new EcosystemDisplay(ecosystem);
-		this.dbService = new MongoDBService();
+		this.dbService = MongoDBService.getInstance();
+		this.csvLogService = CSVLogService.getInstance();
 	}
 
 	private EcosystemService() {
-        this.dbService = new MongoDBService();
+        this.dbService = MongoDBService.getInstance();
+		this.csvLogService = CSVLogService.getInstance();
     }
 
 	public static void initializeInstance(int width, int height) {
@@ -220,6 +223,12 @@ public class EcosystemService {
 				logArea.appendText(message + "\n");
 				logArea.setScrollTop(Double.MAX_VALUE); // autoscroll to bottom
 			});
+		}
+		if (message.length() > 2 && !message.startsWith("Ecosystem statistics at step ")
+				&&!message.startsWith("Carnivores: ") && !message.startsWith("Herbivores: ")
+				&& !message.startsWith("Trees: ") && !message.startsWith("Total Organisms: ")
+				&& !message.startsWith("\nEcosystem statistics after ")) {
+			csvLogService.logAction(message); // dont log useless messages
 		}
 	}
 

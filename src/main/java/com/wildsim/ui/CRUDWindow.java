@@ -48,7 +48,7 @@ public class CRUDWindow extends Application {
     @Override
     public void start(Stage primaryStage) {
         // Initialize the database service
-        dbService = new MongoDBService();
+        dbService = MongoDBService.getInstance();
 
         // Create tabs
         TabPane tabPane = new TabPane();
